@@ -1,0 +1,393 @@
+    <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filters</title>
+</head>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/dataTables.bootstrap5.min.css">
+<!-- <link rel="stylesheet" href="//cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css"> -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.3/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/dataTables.bootstrap5.min.css">
+<style type="text/css">
+    .show {
+        width: 5% !important;
+        display: initial;
+        margin-bottom: 13px;
+        /* background-color: #000;*/
+        color: #000;
+    }
+
+    th,
+    td,
+    p,
+    input,
+    h3 {
+        font: 15px 'Segoe UI';
+    }
+
+    table,
+    th,
+    td {
+        /* border: solid 1px #ddd;*/
+        border-collapse: collapse;
+        padding: 2px 3px;
+        text-align: center;
+    }
+
+    th {
+        font-weight: bold;
+    }
+
+    .search-1 {
+        float: right;
+        margin-bottom: 10px;
+    }
+
+    .table thead th {
+        background-color: #fff;
+        color: #000;
+    }
+
+    #search {
+        /* background-color: #000;*/
+        color: #000;
+    }
+
+    .back-1 {
+        /* background-color: #000;*/
+        padding: 30px 0px 30px 0px;
+        color: #000;
+    }
+
+    .dataTables_paginate {
+        float: right;
+    }
+</style>
+
+<body>
+    <h1 style="text-align: center;" class="back-1"> Investor Lists</h1>
+
+    <form method="POST">
+        <table class="table" id="catTable">
+            <thead>
+                <tr class="filters">
+                    <th>KYC
+                        <select name="kyc" class="form-control" id="kyc" onchange="getOnChangeData(this)">
+                            <option value=''>--Select KYC--</option>
+                            <option>Pending</option>
+                            <option>Success</option>
+                        </select>
+                    </th>
+                    <th>Status
+                        <select name="Status" class="form-control" id="Agreements" onchange="getOnChangeData(this)">
+                            <option value=''>--Select Agreement Status--</option>
+                            <option>Signed</option>
+                            <option>Unsigned</option>
+                        </select>
+                    </th>
+                    <th>Total Investment amount
+                        <select name="TotalIne" class="form-control" id="Investment" onchange="getOnChangeData(this)">
+                            <option value="">--Select Amount--</option>
+                            <option value=0-25000>Below =25,000</option>
+                            <option value="25000-50000">25,000 to =50,000</option>
+                            <option value="50000-75000">50,000 to =75,000</option>
+                            <option value="75000-100000">75,000 to =1,00,000</option>
+                            <option value="100000-200000">1,00,000 to =2,00,000</option>
+                            <option value="200000-500000">2,00,000 to =5,00,000</option>
+                            <option value="500000-100000000000000000000000">Above 5,00,000</option>
+                        </select>
+                    </th>
+                    <th>Commission
+                        <select class="form-control" name="commission" id="commission" onchange="getOnChangeData(this)">
+                            <option value="">--Select Commission--</option>
+                            <option value="0-0.5">Below =.5%</option>
+                            <option value="0.5-1">.5% to =1%</option>
+                            <option value="1-2">1% to =2%</option>
+                            <option value="2-3">2% to =3%</option>
+                            <option value="3-100000000000">Above 3%</option>
+                        </select>
+                    </th>
+                    <th>Referrals
+                        <select class="form-control" name="Referrals" id="ref" onchange="getOnChangeData(this)">
+                            <option value="">--Select Referrals--
+                            </option>
+                            <option value="0-1">Below =1
+                            </option>
+                            <option value="1-5">1 to =5
+                            </option>
+                            <option value="5-10">5 to =10
+                            </option>
+                            <option value="10-20">10 to =20
+                            </option>
+                            <option value="20-1000000000000">Above 20
+                            </option>
+                        </select>
+                    </th>
+                    <th>Invested SPV's
+                        <select name="spv" class="form-control" id="spv" onchange="getOnChangeData(this)">
+                            <option>--Select Invested SPV--</option>
+                        </select>
+                    </th>
+                    <th>
+                        <button id="reset" class="form-control" onclick="getDataReset()">Reset</button>
+                    </th>
+                </tr>
+            </thead>
+        </table>
+    </form>
+
+    <div class="search-1">
+        <label class="search-2">Search : </label> <input type="text" id="search" onkeyup="getSearchData(this)"
+            placeholder="Search Names..." />
+    </div>
+
+Select:
+    <select name="perpage" class="form-control show form-select form-select-sm" id="perpage"
+                onchange="showPerPage(this)" >
+                <option value='2'>2</option>
+                <option value='5'>5</option>
+                <option value="7">7</option>
+                <option value="14">14</option>
+                <option value="21">21</option>
+                <option value="100">100</option>
+            </select>
+
+    <table id="example" class="table table-striped table-hover"
+        style="width:100%; padding-bottom: 10px; border: #0f0f0f">
+
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>%</th>
+                <th>KYC</th>
+                <th>Pending_actions</th>
+                <th>Investment</th>
+                <th>ref</th>
+                <th>Agreements</th>
+                <th>spv</th>
+                <th>invested_money</th>
+                <th>date_of_investment</th>
+            </tr>
+
+        </thead>
+        <tbody id="tblbody"></tbody>
+
+    </table>
+
+    <button id="btnPrev" class="btn" onclick="prevFunc()">Prev</button>
+    <span id="pageNo"></span>
+    <button id="btnNext" class="btn" onclick="nextFunc()">Next</button>
+
+
+    <script src="RestApi.js"></script>
+    <script>
+
+
+//***********************************************Pagging**********************************************************************
+
+
+        let currentPage = 1;
+        let dataPerPage = parseInt(document.getElementById('perpage').value)
+        let totalPage = Math.ceil(object.length / dataPerPage);
+
+
+
+        function showPerPage(e){
+            dataPerPage =  e.value 
+            getObjectData()
+        }
+        function prevFunc() {
+            // dataPerPage =    
+            if (currentPage > 1) {
+                currentPage--
+                getObjectData()
+            }
+        }
+        function nextFunc() {
+            if (currentPage < totalPage) {
+                currentPage++
+                getObjectData()            }
+        }
+
+        for (let i = 1; i < (totalPage + 1); i++) {
+            document.getElementById('pageNo').innerHTML += `<button onclick="getPageNoValue(this)" value="${i}"> ${i} </button>`
+        }
+
+        function getPageNoValue(x) {
+            currentPage = x.value
+            getObjectData()
+        }
+
+
+        function getObjectData(){
+        	document.getElementById('tblbody').innerHTML = ''
+        	for(let i = (currentPage - 1) * dataPerPage; i < (currentPage*dataPerPage); i++){
+        		document.getElementById('tblbody').innerHTML += `<tr><td>${object[i].Id}</td><td>${object[i].Name}</td><td>${object[i].Email}</td><td>${object[i].Phone}</td><td>${object[i].Comission}</td><td>${object[i].kyc}</td><td>${object[i].Pending_actions}</td><td>${object[i].Investment}</td><td>${object[i].ref}</td><td>${object[i].Agreements}</td><td>${getSpvDetails(object[i].spv_details, 'spvName')}</td><td>${getSpvDetails(object[i].spv_details, 'invested_money')}</td><td>${getSpvDetails(object[i].spv_details, 'date_of_investment')}</td></tr>`
+        	}
+
+        }
+        getObjectData()
+
+
+
+// *****************************************Pagging End*************************************************************
+        let filters = {}
+        function getOnChangeData(e) {
+            filters[e.name] = e.value
+            getSelectorData()
+        }
+
+        let searchKeyword = ''
+        function getSearchData(x) {
+            searchKeyword = x.value
+            getSelectorData()
+        }
+
+
+
+
+
+
+        function getDataInSelector() {
+            let spv = document.getElementById('spv')
+            let mtArr = []
+            object.map(e => {
+                e.spv_details.map(a => {
+                    mtArr.push(a.spvName)
+                })
+            })
+            getUniqueValue(mtArr).map(e => {
+                document.getElementById('spv').innerHTML += `<option>${e}</option>`
+            })
+        }
+        getDataInSelector()
+
+        function getUniqueValue(val) {
+            let arr = []
+            for (i of val) {
+                let result = false;
+                for (let j of arr) {
+                    if (i == j) {
+                        result = true;
+                    }
+                }
+                if (result == false) {
+                    arr.push(i)
+                }
+            }
+            return arr
+        }
+
+
+
+        function getDataReset() {
+            document.getElementById('kyc').value = '';
+            document.getElementById('Agreements').value = '';
+            document.getElementById('Investment').value = '';
+            document.getElementById('commission').value = '';
+            document.getElementById('ref').value = '';
+            document.getElementById('spv').value = '';
+            filters = []
+            getSelectorData()
+        }
+
+
+        function getSpvDetails(arr, feildName) {
+            if (arr !== undefined) {
+                let currentDetail = ''
+                arr.forEach(a => {
+                    currentDetail = `${a[feildName]} </br>`
+                });
+                return currentDetail
+            }
+        }
+
+
+
+
+        // console.log(object);
+        function getSelectorData() {
+            finalData = ''
+            object
+                .filter(e => {
+
+                    if (e.kyc == filters.kyc || filters.kyc == '' || filters.kyc == undefined) {
+                        return true
+                    }
+                })
+                .filter((e) => {
+                    if (filters.Status == e.Agreements || filters.Status == undefined || filters.Status == "None") {
+                        return true
+                    }
+                })
+                .filter(e => {
+                    if (filters.TotalIne == undefined) { return true }
+                    if (filters.TotalIne) {
+                        let a = filters.TotalIne.split('-')
+                        if (e.Investment >= a[0] && e.Investment <= a[1]) {
+                            console.log('this is inside Investment fiter')
+                            return true
+                        }
+                    }
+                })
+                .filter(e => {
+                    if (filters.commission == undefined) { return true }
+                    if (filters.commission) {
+                        let a = filters.commission.split('-')
+                        if (e.Comission >= a[0] && e.Comission <= a[1]) {
+                            console.log('this is inside Investment fiter')
+                            return true
+                        }
+                    }
+                })
+                .filter(e => {
+                    if (filters.Referrals == undefined) { return true }
+                    if (filters.Referrals) {
+                        let a = filters.Referrals.split('-')
+                        if (e.ref >= a[0] && e.ref <= a[1]) {
+                            console.log('this is Inside Referrals filter')
+                            return true
+                        }
+                    }
+                })
+                .filter(e => {
+                    let filterSpvData = false
+                    if (filters.spv == undefined) { return true }
+                    e.spv_details.filter(a => {
+                        if (filters.spv == a.spvName) {
+                            filterSpvData = true
+                        }
+                    })  
+                    return filterSpvData
+                }).filter(e => {
+                    if (e.Name.toUpperCase().includes(searchKeyword.toUpperCase())) {
+                        return true
+                    }
+                })
+                // .filter(e => {
+                //     document.getElementById('tblbody').innerHTML = ''
+                //     for(let i = (currentPage - 1) * dataPerPage; i < (currentPage*dataPerPage); i++){
+                //         return true
+                //     }
+                // })
+                .sort((a, b) => a['Id'] - b['Id'])
+                .map(e => {
+                    finalData += `<tr><td>${e.Id}</td><td>${e.Name}</td><td>${e.Email}</td><td>${e.Phone}</td><td>${e.Comission}</td><td>${e.kyc}</td><td>${e.Pending_actions}</td><td>${e.Investment}</td><td>${e.ref}</td><td>${e.Agreements}</td><td>${getSpvDetails(e.spv_details, 'spvName')}</td><td>${getSpvDetails(e.spv_details, 'invested_money')}</td><td>${getSpvDetails(e.spv_details, 'date_of_investment')}</td></tr>`
+
+                    document.getElementById('tblbody').innerHTML = finalData
+                })
+
+        }
+        // getSelectorData()
+
+
+    </script>
+</body>
+
+</html>
